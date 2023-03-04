@@ -3,17 +3,29 @@ import './ProductList.css';
 import ProductItem from "../ProductItem/ProductItem";
 import {useTelegram} from "../../hooks/useTelegram";
 import {useCallback, useEffect} from "react";
+const { Pool } = require('pg');
 
-const products = [
-    {id: '1', title: 'Джинсы', price: 5000, description: 'Синего цвета, прямые'},
-    {id: '2', title: 'Куртка', price: 12000, description: 'Зеленого цвета, теплая'},
-    {id: '3', title: 'Джинсы 2', price: 5000, description: 'Синего цвета, прямые'},
-    {id: '4', title: 'Куртка 8', price: 122, description: 'Зеленого цвета, теплая'},
-    {id: '5', title: 'Джинсы 3', price: 5000, description: 'Синего цвета, прямые'},
-    {id: '6', title: 'Куртка 7', price: 600, description: 'Зеленого цвета, теплая'},
-    {id: '7', title: 'Джинсы 4', price: 5500, description: 'Синего цвета, прямые'},
-    {id: '8', title: 'Куртка 5', price: 12000, description: 'Зеленого цвета, теплая'},
-]
+const config = {
+    host: 'localhost',
+    port: 5555,
+    database: 'online_store',
+    user: 'postgres',
+    password: '123456'
+  };
+  
+const pool = new Pool(config);
+
+const products = [];
+
+pool.query('SELECT * FROM users', (err, result) => {
+    if (err) throw err;
+
+    for (let i = 0; i < result.rows.length; i++) {
+        products = [
+            {id: result.rows[i].id, title: result.rows[i].name, price: result.rows[i].price, description: result.rows[i].name}
+        ]
+    }
+});
 
 const getTotalPrice = (items = []) => {
     return items.reduce((acc, item) => {
